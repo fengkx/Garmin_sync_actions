@@ -32,43 +32,9 @@
 
 ## 检查网络情况确保正常访问佳明服务
 
-### 测试国际互联网网络连通性
+### 测试国际互联网与佳明国际区网络连通性
 ```shell
-wget google.com
-```
-执行后确保相应的数据类似如下再进行下面步骤，否则请检查网络环境（命令行也需要能访问国际互联网, 如果google在浏览器能正常访问，但是命令行无法ping通，google搜索关键词**命令行翻墙**，参考配置一下重试。） 如果用的时Clash，在左侧 General 下，将 TUN Mode 模式开启也可。
-```shell
-root@home:~# wget google.com
-
-StatusCode        : 200
-StatusDescription : OK
-Content           : <!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="zh-HK"><head><meta con
-                    tent="text/html; charset=UTF-8" http-equiv="Content-Type"><meta content="/images/branding/googleg/1
-                    x/...
-RawContent        : HTTP/1.1 200 OK
-                    Connection: close
-                    Conts...
-Forms             : {f}
-Headers           : {[ https://csp.withgoogle.com/csp/gws/other-hp], [Cache-Control, private, max
-                    -age=0], [Content-Type, text/html; charset=UTF-8]...}
-Images            : {@{innerHTML=; n value=zh-HK name=hl>; outerText=; tagName=I
-                    NPUT; th}...}
-Links             : {@{i id=gb_78; class=gbzt;
-                     href=https://play.google.com/?hl=zh-TW&amp;tab=w8}...}
-ParsedHtml        : mshtml.HTMLDocumentClass
-RawContentLength  : 52716
-```    
-如果是如下显示则代表网络没有配置好，请先按上面说的方法解决再试。
-```shell
-root@home:~# wget google.com
-
---2023-07-06 20:26:18--  http://google.com/
-Resolving google.com (google.com)... 142.251.42.238
-Connecting to google.com (google.com)|142.251.42.238|:80... failed: Connection timed out.
-Retrying.
-```
-### 测试佳明国际区网络连通性
-```shell
+ping google.com
 ping sso.garmin.com
 ```
 ```shell
@@ -144,17 +110,7 @@ yarn sync_cn
 ```shell
 yarn sync_global
 ```
-迁移历史数据：中国区到国际区
-```shell
-yarn migrate_garmin_cn_to_global
-```
-迁移历史数据：国际区到中国区
-```shell
-yarn migrate_garmin_global_to_cn
-```
-
 #### 常见问题
-
 如果上面ping都正常，却仍然不能正常运行，请尝试将梯子更换为美国IP
 
 ## 定时任务(Linux Only)
@@ -162,27 +118,15 @@ yarn migrate_garmin_global_to_cn
 
 `crontab -e` 打开定时任务编辑，按需添加： 
 
-### 每3小时检查并同步国际区到中国区【可选】,注意PATH和SHELL两行也要写上
+### 每10分钟检查并同步国际区到中国区【可选】
 ```cron
-PATH=$PATH:/usr/local/bin:/usr/bin
-SHELL=/bin/bash
-0 */3 * * * cd /root/code/dailysync/ && yarn --cwd /root/code/dailysync/ sync_global >> /var/log/dailysync.log 2>&1
+*/10 * * * * yarn --cwd /home/root/code/DailySync/ sync_global
 ```
-### 每3小时检查并同步中国区到国际区【可选】,注意PATH和SHELL两行也要写上
+### 每10分钟检查并同步中国区到国际区【可选】
 ```cron
-PATH=$PATH:/usr/local/bin:/usr/bin
-SHELL=/bin/bash
-0 */3 * * * cd /root/code/dailysync/ && yarn --cwd /root/code/dailysync/ sync_cn >> /var/log/dailysync.log 2>&1
+*/10 * * * * yarn --cwd /home/root/code/DailySync/ sync_cn
 ```
-其中 `/root/code/dailysync/`为脚本在机器上的目录地址，更换为您机器上的目录即可
-
-![](./assets/crontab-e.png)
-
-### 运行日志查看
-
-```shell
-tail -100f /var/log/dailysync.log
-```
+其中 `/home/root/code/DailySync/`为脚本在机器上的目录地址，更换为您机器上的目录即可
 
 ### 修改定时任务执行频率
 当前为 `*/10 * * * *` 每 10 分钟执行一次
