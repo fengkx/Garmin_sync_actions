@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     #  每6小时检查一次
-    - cron: "0 */6 * * *"
-  push:
-    branches:
-      - main
+    #- cron: "0 */6 * * *"
+    #push:
+    #  branches:
+    #    - main
 
 env:
   # please change to your own config.
